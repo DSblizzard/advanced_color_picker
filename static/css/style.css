@@ -1,0 +1,29 @@
+.canvas {
+	float: left;
+}
+
+#gradient_inputs {
+	float: left;
+	margin-left: 16px;
+}
+
+.gradient_input {
+	display: block;
+	width: 64px;
+}
+
+#gradient_input0 {
+	margin-bottom: 56px;
+}
+
+#gradient_input1 {
+	margin-bottom: 16px;
+}
+
+#gradient_input2 {
+	margin-top: 16px;
+}
+
+#gradient_input3 {
+	margin-top: 56px;
+}

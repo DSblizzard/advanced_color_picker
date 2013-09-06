@@ -1,0 +1,506 @@
+<head>
+	<script>
+		$('.color_table').on('click', 'td', function(e) {
+			color = e.target.style.backgroundColor;
+			if (starts_with(color, "rgb(")) {
+				rgb = color.replace("rgb(", "").replace(")", "").split(", ");
+			}
+			$('#color_val').val(rgb_to_hex(parseInt(rgb[0]), parseInt(rgb[1]), parseInt(rgb[2])).toUpperCase());
+		});
+	</script>
+</head>
+<h3>White</h3>
+<table class="color_table" style="background:transparent; width:100%">
+	<tr>
+		<td style="background:#F2F3F4">&#160;</td>
+		<td style="background:#FAEBD7">&#160;</td>
+		<td style="background:#F5F5DC">&#160;</td>
+		<td style="background:#FAF0BE">&#160;</td>
+		<td style="background:#FFF8DC">&#160;</td>
+		<td style="background:#FFF8E7">&#160;</td>
+		<td style="background:#FFFDD0">&#160;</td>
+		<td style="background:#F0EAD6">&#160;</td>
+		<td style="background:#FFFAF0">&#160;</td>
+		<td style="background:#F8F8FF">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#F0FFF0">&#160;</td>
+		<td style="background:#F4F0EC">&#160;</td>
+		<td style="background:#FFFFF0">&#160;</td>
+		<td style="background:#FFF0F5">&#160;</td>
+		<td style="background:#FFFACD">&#160;</td>
+		<td style="background:#FAF0E6">&#160;</td>
+		<td style="background:#F8F4FF">&#160;</td>
+		<td style="background:#F5FFFA">&#160;</td>
+		<td style="background:#FFDEAD">&#160;</td>
+		<td style="background:#FDF5E6">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#FFEFD5">&#160;</td>
+		<td style="background:#EAE0C8">&#160;</td>
+		<td style="background:#FFF5EE">&#160;</td>
+		<td style="background:#FFFAFA">&#160;</td>
+		<td style="background:#FEFDFF">&#160;</td>
+		<td style="background:#F3E5AB">&#160;</td>
+		<td style="background:#FFFFFF">&#160;</td>
+		<td style="background:#F5F5F5">&#160;</td>
+	</tr>
+</table>
+<h3>Gray</h3>
+<table class="color_table" style="background:transparent; width:100%">
+	<tr>
+		<td style="background:#808080">&#160;</td>
+		<td style="background:#B2BEB5">&#160;</td>
+		<td style="background:#848482">&#160;</td>
+		<td style="background:#000000">&#160;</td>
+		<td style="background:#6699CC">&#160;</td>
+		<td style="background:#91A3B0">&#160;</td>
+		<td style="background:#36454F">&#160;</td>
+		<td style="background:#8C92AC">&#160;</td>
+		<td style="background:#555555">&#160;</td>
+		<td style="background:#536878">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#423732">&#160;</td>
+		<td style="background:#C0C0C0">&#160;</td>
+		<td style="background:#708090">&#160;</td>
+		<td style="background:#483C32">&#160;</td>
+		<td style="background:#50404D">&#160;</td>
+		<td style="background:#674C47">&#160;</td>
+		<td style="background:#AA98A9">&#160;</td>
+		<td style="background:#8B8589">&#160;</td>
+		<td style="background:#DBD7D2">&#160;</td>
+		<td style="background:#FFFFFF">&#160;</td>
+	</tr>
+</table>
+<h3>Pink</h3>
+<table class="color_table" style="background:transparent; width:100%">
+	<tr>
+		<td style="background:#E52B50">&#160;</td>
+		<td style="background:#F19CBB">&#160;</td>
+		<td style="background:#FF91AF">&#160;</td>
+		<td style="background:#FB607F">&#160;</td>
+		<td style="background:#960018">&#160;</td>
+		<td style="background:#FFA6C9">&#160;</td>
+		<td style="background:#DE3163">&#160;</td>
+		<td style="background:#F88379">&#160;</td>
+		<td style="background:#EF3038">&#160;</td>
+		<td style="background:#FF1493">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#B53389">&#160;</td>
+		<td style="background:#F64A8A">&#160;</td>
+		<td style="background:#FF00FF">&#160;</td>
+		<td style="background:#F400A1">&#160;</td>
+		<td style="background:#FF00CC">&#160;</td>
+		<td style="background:#FF69B4">&#160;</td>
+		<td style="background:#FBAED2">&#160;</td>
+		<td style="background:#FF0090">&#160;</td>
+		<td style="background:#E0B0FF">&#160;</td>
+		<td style="background:#E4007C">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#997A8D">&#160;</td>
+		<td style="background:#FE28A2">&#160;</td>
+		<td style="background:#FFCBDB">&#160;</td>
+		<td style="background:#CC8899">&#160;</td>
+		<td style="background:#FF007F">&#160;</td>
+		<td style="background:#FF66CC">&#160;</td>
+		<td style="background:#E0115F">&#160;</td>
+		<td style="background:#FF91A4">&#160;</td>
+		<td style="background:#FC0FC0">&#160;</td>
+		<td style="background:#DE6FA1">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#FF6FFF">&#160;</td>
+	</tr>
+</table>
+<h3>Red</h3>
+<table class="color_table" style="background:transparent; width:100%">
+	<tr>
+		<td style="background:#E52B50">&#160;</td>
+		<td style="background:#A52A2A">&#160;</td>
+		<td style="background:#9F1D35">&#160;</td>
+		<td style="background:#C41E3A">&#160;</td>
+		<td style="background:#960018">&#160;</td>
+		<td style="background:#DE3163">&#160;</td>
+		<td style="background:#9A1A00">&#160;</td>
+		<td style="background:#DC143C">&#160;</td>
+		<td style="background:#8B0000">&#160;</td>
+		<td style="background:#FF003F">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#B22222">&#160;</td>
+		<td style="background:#E25822">&#160;</td>
+		<td style="background:#FF004F">&#160;</td>
+		<td style="background:#FF00FF">&#160;</td>
+		<td style="background:#E62020">&#160;</td>
+		<td style="background:#FF0090">&#160;</td>
+		<td style="background:#800000">&#160;</td>
+		<td style="background:#E30B5C">&#160;</td>
+		<td style="background:#FF0000">&#160;</td>
+		<td style="background:#C71585">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#AB4E52">&#160;</td>
+		<td style="background:#FF007F">&#160;</td>
+		<td style="background:#65000B">&#160;</td>
+		<td style="background:#E0115F">&#160;</td>
+		<td style="background:#DA2C43">&#160;</td>
+		<td style="background:#B7410E">&#160;</td>
+		<td style="background:#FF2400">&#160;</td>
+		<td style="background:#E2725B">&#160;</td>
+		<td style="background:#7C3030">&#160;</td>
+		<td style="background:#E34234">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#722F37">&#160;</td>
+		<td style="background:#E32636">&#160;</td>
+	</tr>
+</table>
+<h3>Brown</h3>
+<table class="color_table" style="background:transparent; width:100%">
+	<tr>
+		<td style="background:#A52A2A">&#160;</td>
+		<td style="background:#9F8170">&#160;</td>
+		<td style="background:#F5F5DC">&#160;</td>
+		<td style="background:#3D2B1F">&#160;</td>
+		<td style="background:#79443B">&#160;</td>
+		<td style="background:#CD7F32">&#160;</td>
+		<td style="background:#964B00">&#160;</td>
+		<td style="background:#F0DC82">&#160;</td>
+		<td style="background:#900020">&#160;</td>
+		<td style="background:#E97451">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#8A3324">&#160;</td>
+		<td style="background:#C19A6B">&#160;</td>
+		<td style="background:#A0785A">&#160;</td>
+		<td style="background:#954535">&#160;</td>
+		<td style="background:#7B3F00">&#160;</td>
+		<td style="background:#E4D00A">&#160;</td>
+		<td style="background:#6F4E37">&#160;</td>
+		<td style="background:#B87333">&#160;</td>
+		<td style="background:#893F45">&#160;</td>
+		<td style="background:#EDC9AF">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#E1A95F">&#160;</td>
+		<td style="background:#C2B280">&#160;</td>
+		<td style="background:#C19A6B">&#160;</td>
+		<td style="background:#E5AA70">&#160;</td>
+		<td style="background:#6C541E">&#160;</td>
+		<td style="background:#E48400">&#160;</td>
+		<td style="background:#F4F0EC">&#160;</td>
+		<td style="background:#F0E68C">&#160;</td>
+		<td style="background:#C19A6B">&#160;</td>
+		<td style="background:#674C47">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#C04000">&#160;</td>
+		<td style="background:#800000">&#160;</td>
+		<td style="background:#CC7722">&#160;</td>
+		<td style="background:#926644">&#160;</td>
+		<td style="background:#A45A52">&#160;</td>
+		<td style="background:#A81C07">&#160;</td>
+		<td style="background:#80461B">&#160;</td>
+		<td style="background:#B7410E">&#160;</td>
+		<td style="background:#C2B280">&#160;</td>
+		<td style="background:#F4A460">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#321414">&#160;</td>
+		<td style="background:#704214">&#160;</td>
+		<td style="background:#882D17">&#160;</td>
+		<td style="background:#CB410B">&#160;</td>
+		<td style="background:#D2B48C">&#160;</td>
+		<td style="background:#483C32">&#160;</td>
+		<td style="background:#CD5700">&#160;</td>
+		<td style="background:#635147">&#160;</td>
+		<td style="background:#645452">&#160;</td>
+		<td style="background:#F5DEB3">&#160;</td>
+	</tr>
+</table>
+<h3>Orange</h3>
+<table class="color_table" style="background:transparent; width:100%">
+	<tr>
+		<td style="background:#FFBF00">&#160;</td>
+		<td style="background:#FBCEB1">&#160;</td>
+		<td style="background:#FF9966">&#160;</td>
+		<td style="background:#FF6F5E">&#160;</td>
+		<td style="background:#964B00">&#160;</td>
+		<td style="background:#CC5500">&#160;</td>
+		<td style="background:#ED9121">&#160;</td>
+		<td style="background:#F7E7CE">&#160;</td>
+		<td style="background:#FF7F50">&#160;</td>
+		<td style="background:#E9967A">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#E9692C">&#160;</td>
+		<td style="background:#FF7E00">&#160;</td>
+		<td style="background:#E25822">&#160;</td>
+		<td style="background:#EF9B0F">&#160;</td>
+		<td style="background:#FFD700">&#160;</td>
+		<td style="background:#D4AF37">&#160;</td>
+		<td style="background:#FF4F00">&#160;</td>
+		<td style="background:#C19A6B">&#160;</td>
+		<td style="background:#C04000">&#160;</td>
+		<td style="background:#CFB53B">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#FF7F00">&#160;</td>
+		<td style="background:#FFA500">&#160;</td>
+		<td style="background:#FF4500">&#160;</td>
+		<td style="background:#FFA000">&#160;</td>
+		<td style="background:#FFEFD5">&#160;</td>
+		<td style="background:#FFE5B4">&#160;</td>
+		<td style="background:#FFCC99">&#160;</td>
+		<td style="background:#FADFAD">&#160;</td>
+		<td style="background:#D99058">&#160;</td>
+		<td style="background:#FF5A36">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#FF8F00">&#160;</td>
+		<td style="background:#FF7518">&#160;</td>
+		<td style="background:#B7410E">&#160;</td>
+		<td style="background:#FF6700">&#160;</td>
+		<td style="background:#FF8C69">&#160;</td>
+		<td style="background:#CBA135">&#160;</td>
+		<td style="background:#FAD6A5">&#160;</td>
+		<td style="background:#F94D00">&#160;</td>
+		<td style="background:#F28500">&#160;</td>
+		<td style="background:#F88379">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#CD5700">&#160;</td>
+		<td style="background:#FF6347">&#160;</td>
+		<td style="background:#E34234">&#160;</td>
+	</tr>
+</table>
+<h3>Yellow</h3>
+<table class="color_table" style="background:transparent; width:100%">
+	<tr>
+		<td style="background:#FFBF00">&#160;</td>
+		<td style="background:#FBCEB1">&#160;</td>
+		<td style="background:#FDEE00">&#160;</td>
+		<td style="background:#F5F5DC">&#160;</td>
+		<td style="background:#F0DC82">&#160;</td>
+		<td style="background:#E4D00A">&#160;</td>
+		<td style="background:#FFFDD0">&#160;</td>
+		<td style="background:#B8860B">&#160;</td>
+		<td style="background:#CDB280">&#160;</td>
+		<td style="background:#FFD700">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#D4AF37">&#160;</td>
+		<td style="background:#DAA520">&#160;</td>
+		<td style="background:#F8DE7E">&#160;</td>
+		<td style="background:#FACA16">&#160;</td>
+		<td style="background:#C3B091">&#160;</td>
+		<td style="background:#FFFACD">&#160;</td>
+		<td style="background:#C19A6B">&#160;</td>
+		<td style="background:#FBEC5D">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#FFC40C">&#160;</td>
+		<td style="background:#FFDB58">&#160;</td>
+		<td style="background:#FADA5E">&#160;</td>
+		<td style="background:#FFDEAD">&#160;</td>
+		<td style="background:#FFEFD5">&#160;</td>
+		<td style="background:#F4C430">&#160;</td>
+		<td style="background:#ffd800">&#160;</td>
+		<td style="background:#FFBA00">&#160;</td>
+		<td style="background:#FADA5E">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#E4D96F">&#160;</td>
+		<td style="background:#FFCC33">&#160;</td>
+		<td style="background:#F3E5AB">&#160;</td>
+		<td style="background:#FFFFED">&#160;</td>
+		<td style="background:#FFFF00">&#160;</td>
+	</tr>
+</table>
+<h3>Green</h3>
+<table class="color_table" style="background:transparent; width:100%">
+	<tr>
+		<td style="background:#8DB600">&#160;</td>
+		<td style="background:#7BA05B">&#160;</td>
+		<td style="background:#66FF00">&#160;</td>
+		<td style="background:#1E4D2B">&#160;</td>
+		<td style="background:#7FFF00">&#160;</td>
+		<td style="background:#556B2F">&#160;</td>
+		<td style="background:#177245">&#160;</td>
+		<td style="background:#00693E">&#160;</td>
+		<td style="background:#4F7942">&#160;</td>
+		<td style="background:#228B22">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#00FF00">&#160;</td>
+		<td style="background:#ADFF2F">&#160;</td>
+		<td style="background:#3FFF00">&#160;</td>
+		<td style="background:#F0FFF0">&#160;</td>
+		<td style="background:#355E3B">&#160;</td>
+		<td style="background:#138808">&#160;</td>
+		<td style="background:#009900">&#160;</td>
+		<td style="background:#29AB87">&#160;</td>
+		<td style="background:#7CFC00">&#160;</td>
+		<td style="background:#BFFF00">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#32CD32">&#160;</td>
+		<td style="background:#74C365">&#160;</td>
+		<td style="background:#3EB489">&#160;</td>
+		<td style="background:#F5FFFA">&#160;</td>
+		<td style="background:#008000">&#160;</td>
+		<td style="background:#808000">&#160;</td>
+		<td style="background:#6B8E23">&#160;</td>
+		<td style="background:#006600">&#160;</td>
+		<td style="background:#50C878">&#160;</td>
+		<td style="background:#00A693">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#123524">&#160;</td>
+		<td style="background:#00A550">&#160;</td>
+		<td style="background:#01796F">&#160;</td>
+		<td style="background:#93C572">&#160;</td>
+		<td style="background:#2E8B57">&#160;</td>
+		<td style="background:#009E60">&#160;</td>
+		<td style="background:#A7FC00">&#160;</td>
+		<td style="background:#00FF7F">&#160;</td>
+		<td style="background:#008080">&#160;</td>
+		<td style="background:#9ACD32">&#160;</td>
+	</tr>
+</table>
+<h3>Cyan</h3>
+<table class="color_table" style="background:transparent; width:100%">
+	<tr>
+		<td style="background:#F0F8FF">&#160;</td>
+		<td style="background:#00FFFF">&#160;</td>
+		<td style="background:#7FFFD4">&#160;</td>
+		<td style="background:#F0FFFF">&#160;</td>
+		<td style="background:#B2FFFF">&#160;</td>
+		<td style="background:#007BA7">&#160;</td>
+		<td style="background:#00FFFF">&#160;</td>
+		<td style="background:#7DF9FF">&#160;</td>
+		<td style="background:#29AB87">&#160;</td>
+		<td style="background:#AAF0D1">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#3EB489">&#160;</td>
+		<td style="background:#00A693">&#160;</td>
+		<td style="background:#01796F">&#160;</td>
+		<td style="background:#00CCCC">&#160;</td>
+		<td style="background:#2E8B57">&#160;</td>
+		<td style="background:#007A74">&#160;</td>
+		<td style="background:#87CEEB">&#160;</td>
+		<td style="background:#81D8D0">&#160;</td>
+		<td style="background:#008080">&#160;</td>
+		<td style="background:#40E0D0">&#160;</td>
+	</tr>
+	</table>
+<h3>Blue</h3>
+<table class="color_table" style="background:transparent; width:100%">
+	<tr>
+		<td style="background:#5D8AA8">&#160;</td>
+		<td style="background:#72A0C1">&#160;</td>
+		<td style="background:#F0F8FF">&#160;</td>
+		<td style="background:#007FFF">&#160;</td>
+		<td style="background:#89CFF0">&#160;</td>
+		<td style="background:#318CE7">&#160;</td>
+		<td style="background:#0000FF">&#160;</td>
+		<td style="background:#6699CC">&#160;</td>
+		<td style="background:#0095B6">&#160;</td>
+		<td style="background:#0070FF">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#A3C1AD">&#160;</td>
+		<td style="background:#56A0D3">&#160;</td>
+		<td style="background:#B2FFFF">&#160;</td>
+		<td style="background:#007BA7">&#160;</td>
+		<td style="background:#0047AB">&#160;</td>
+		<td style="background:#75B2DD">&#160;</td>
+		<td style="background:#6495ED">&#160;</td>
+		<td style="background:#00FFFF">&#160;</td>
+		<td style="background:#0000B8">&#160;</td>
+		<td style="background:#00BFFF">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#1560BD">&#160;</td>
+		<td style="background:#1E90FF">&#160;</td>
+		<td style="background:#00009C">&#160;</td>
+		<td style="background:#1034A6">&#160;</td>
+		<td style="background:#7DF9FF">&#160;</td>
+		<td style="background:#96C8A2">&#160;</td>
+		<td style="background:#16166B">&#160;</td>
+		<td style="background:#6082B6">&#160;</td>
+		<td style="background:#6F00FF">&#160;</td>
+		<td style="background:#4B0082">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#002FA7">&#160;</td>
+		<td style="background:#5A4FCF">&#160;</td>
+		<td style="background:#ADD8E6">&#160;</td>
+		<td style="background:#6050DC">&#160;</td>
+		<td style="background:#73C2FB">&#160;</td>
+		<td style="background:#0000CD">&#160;</td>
+		<td style="background:#191970">&#160;</td>
+		<td style="background:#000080">&#160;</td>
+		<td style="background:#A4DDED">&#160;</td>
+		<td style="background:#002147">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#273BE2">&#160;</td>
+		<td style="background:#CCCCFF">&#160;</td>
+		<td style="background:#1C39BB">&#160;</td>
+		<td style="background:#000f89">&#160;</td>
+		<td style="background:#B0E0E6">&#160;</td>
+		<td style="background:#003153">&#160;</td>
+		<td style="background:#4169E1">&#160;</td>
+		<td style="background:#0F52BA">&#160;</td>
+		<td style="background:#87CEEB">&#160;</td>
+		<td style="background:#4682b4">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#008080">&#160;</td>
+		<td style="background:#81D8D0">&#160;</td>
+		<td style="background:#0073CF">&#160;</td>
+		<td style="background:#417DC1">&#160;</td>
+		<td style="background:#40E0D0">&#160;</td>
+		<td style="background:#536895">&#160;</td>
+		<td style="background:#120A8F">&#160;</td>
+		<td style="background:#324AB2">&#160;</td>
+		<td style="background:#0F4D92">&#160;</td>
+		<td style="background:#0014A8">&#160;</td>
+	</tr>
+</table>
+<h3>Violet</h3>
+<table class="color_table" style="background:transparent; width:100%">
+	<tr>
+		<td style="background:#9966CC">&#160;</td>
+		<td style="background:#702963">&#160;</td>
+		<td style="background:#DE3163">&#160;</td>
+		<td style="background:#614051">&#160;</td>
+		<td style="background:#B53389">&#160;</td>
+		<td style="background:#FF00FF">&#160;</td>
+		<td style="background:#DF73FF">&#160;</td>
+		<td style="background:#6F00FF">&#160;</td>
+		<td style="background:#FFF0F5">&#160;</td>
+		<td style="background:#B57EDC">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#E6E6FA">&#160;</td>
+		<td style="background:#FF0090">&#160;</td>
+		<td style="background:#E0B0FF">&#160;</td>
+		<td style="background:#DA70D6">&#160;</td>
+		<td style="background:#8E4585">&#160;</td>
+		<td style="background:#800080">&#160;</td>
+		<td style="background:#C71585">&#160;</td>
+		<td style="background:#FF007F">&#160;</td>
+		<td style="background:#D8BFD8">&#160;</td>
+		<td style="background:#8F00FF">&#160;</td>
+	</tr>
+	<tr>
+		<td style="background:#324AB2">&#160;</td>
+		<td style="background:#C9A0DC">&#160;</td>
+	</tr>
+</table>

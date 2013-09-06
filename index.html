@@ -1,0 +1,583 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- line 60 -->
+
+
+<html xml:lang="ru" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Title</title>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<link href="static/css/style.css" rel="stylesheet" type="text/css">
+	<script language="javascript" type="text/javascript" src="static/js/jquery.min.js"></script>
+	<script language="javascript" type="text/javascript" src="static/js/utils.js"></script>
+	<script src="static/js/script.js" type="text/javascript"></script>
+	<script>
+		var size = 256;
+		var sel_radius = 5;
+		var scale_factor = 4;
+		var max_scale_level = 2;
+		var gradient_width = 48;
+		var cb_hide_sel_rect;
+		var black_gradient_abs_rgb1 = [0, 0, 0];
+		var white_gradient_abs_rgb1 = [255, 255, 255];
+		var background = {
+			name: "background",
+			plane: 'gb',
+			saved_palette: null,
+			cur_rgb: [128, 128, 128],
+			cur_rgb_vertex: [-1, -1, -1],
+			cur_coord_nums: null,
+			third_coord_num: null,
+			scale_level: 0,
+			cur_scale: 1,
+			scale_rect_radius: size/2,
+			cur_image: "palette",
+			latest_gradient_inputs: ["gradient_input0", "gradient_input2"],
+			saved_color_gradient: null,
+			sel_rect_rgb: [0, 0, 0],
+			color_gradient_selected: 0,
+			color_gradient_abs_rgb0: [-1, -1, -1],
+			color_gradient_abs_rgb3: [-1, -1, -1],
+			color_gradient_start: 0,
+			color_gradient_abs_sel_pos: 128,
+			black_gradient_start: 0
+		}
+		var font = jQuery.extend(true, {}, background);
+		font.cur_rgb = [0, 0, 0];
+		font.name = "font";
+		var o = background;
+		
+		
+		function color_distance(rgb0, rgb1) {
+			sum = 0;
+			for (var i = 0; i < 3; i++) {
+				sum += Math.abs(rgb0[i] - rgb1[i]);
+			}
+			return sum;
+		}
+		
+		function calc_cur_rgb_vertex(o) {
+			log("_");
+			log(o.cur_rgb);
+			log(o.scale_rect_radius);
+			log(o.cur_scale);
+			for (var i = 0; i < 3; i++) {
+				o.cur_rgb_vertex[i] = limit(round(o.cur_rgb[i]/o.scale_rect_radius) - 1, 0, 2*o.cur_scale-2) * o.scale_rect_radius;
+			}
+			log(o.cur_rgb_vertex);
+		}
+		
+		function calc_cur_coord_nums(o) {
+			if (o.plane === "gb") {
+				o.cur_coord_nums = [1, 2];
+				o.third_coord_num = 0;
+			} else if (o.plane === "rb") {
+				o.cur_coord_nums = [0, 2];
+				o.third_coord_num = 1;
+			} else if (o.plane === "rg") {
+				o.cur_coord_nums = [0, 1];
+				o.third_coord_num = 2;
+			}
+		}
+		
+		function calc_sel_rect_rgb(o) {
+			if (color_distance(o.sel_rect_rgb, o.cur_rgb) < 330) {
+				for (var i = 0; i < 3; i++) {
+					o.sel_rect_rgb[i] = 255 - o.sel_rect_rgb[i];
+				}
+			}
+		}
+		
+		function set_cur_rgb(o, rgb) {
+			for (var i = 0; i < 3; i++) {
+				if (rgb[i] < 0 || rgb[i] > 255)
+					return;
+			}
+			for (var i = 0; i < 3; i++) {
+				o.cur_rgb[i] = rgb[i];
+			}
+			hex = rgb_ar_to_hex(o.cur_rgb).toUpperCase();
+			$('#color_val').val(hex);
+			calc_sel_rect_rgb(o);
+			calc_cur_rgb_vertex(o);
+			draw_black_gradient(o);
+			draw_white_gradient(o);
+			if (o.name === "background")
+				doc_elt("example").style.background = hex;
+			else
+				doc_elt("example").style.color = hex;
+		}
+		
+		function set_cur_rgb_from_x_y(o, x, y) {
+			xy = [x, y];
+			var rgb = [-1, -1, -1];
+			for (var i = 0; i < 3; i++) {
+				rgb[i] = o.cur_rgb[i];
+			}
+			for (var i = 0; i < 2; i++) {
+				rgb[o.cur_coord_nums[i]] = floor(xy[i] / o.cur_scale) + o.cur_rgb_vertex[o.cur_coord_nums[i]];
+			}
+			set_cur_rgb(o, rgb);
+		}
+		
+		function change_cur_rgb(o, rgb_delta) {
+			rgb = [-1, -1, -1];
+			for (var i = 0; i < 3; i++) {
+				rgb[i] = o.cur_rgb[i] + rgb_delta[i];
+			}
+			set_cur_rgb(o, rgb);
+		}
+		
+		function calc_xy(o) {
+			xyz = [-1, -1, -1];
+			for (var i = 0; i < 3; i++) {
+				xyz[i] = (o.cur_rgb[i] - o.cur_rgb_vertex[i]) * o.cur_scale;
+			}
+			x = xyz[o.cur_coord_nums[0]];
+			y = xyz[o.cur_coord_nums[1]];
+			return [x, y];
+		}
+		
+		function colors_and_gradient_input_nums() {
+			colors = [-1, -1];
+			nums = [-1, -1];
+			pos = 0;
+			for (var i = 0; i < 4; i++) {
+				s = $('#gradient_input' + i).val();
+				if (is_hex_color(s)) {
+					if (s[0] === "#")
+						s = substr(s, 1, len(s));
+					colors[pos] = s;
+					nums[pos] = i;
+					pos++;
+				}
+			}
+			if (colors[1] === -1)
+				return null;
+			else
+				return [colors, nums];
+		}
+		
+		function extrapolated_component(rgbs, nums, edge_num, i) {
+			res = rgbs[nums[edge_num]][i] + (rgbs[nums[1]][i] - rgbs[nums[0]][i]) * coeff;
+			if (res < 0) {
+				res = 0;
+			} else if (res > 255) {
+				res = 255;
+			}
+			return res;
+		}
+		
+		function remove_color_gradient_rect(o) {
+			if (o.color_gradient_selected) {
+				o.color_gradient_selected = 0;
+				$color_gradient.putImageData(o.saved_color_gradient, 0, 0, gradient_width, size);
+			}
+		}
+		
+		function clear_gradient_input(o, e) {
+			if ( o.latest_gradient_inputs.indexOf($(e.target).attr("id")) === -1 ) {
+				id = '#' + o.latest_gradient_inputs[0];
+				$(id).val("");
+				$(id).attr('old_val', "");
+			}
+			if ( o.latest_gradient_inputs[1] !== $(e.target).attr("id") ) {
+				o.latest_gradient_inputs[0] = o.latest_gradient_inputs[1];
+				o.latest_gradient_inputs[1] = $(e.target).attr("id");
+			}
+		}
+		
+		function style_str(rgb) {
+			var a = 255;
+			return "rgba(" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ", " + (a/255) + ")";
+		}
+		
+		function draw_palette_rect(o, x, y) {
+			if (cb_hide_sel_rect.checked)
+				return;
+			if (typeof x === "undefined" || typeof y === "undefined") {
+				var xy = calc_xy(o);
+				x = xy[0];
+				y = xy[1];
+			}
+			$palette.beginPath();
+			$palette.rect(x-sel_radius + 0.5, y-sel_radius + 0.5, 2*sel_radius+1, 2*sel_radius+1);
+			$palette.strokeStyle = style_str(o.sel_rect_rgb);
+			$palette.stroke();
+			$palette.closePath();
+		}
+		
+		function draw_palette(o) {
+			var r, g, b;
+			var a = 255;
+			var cur_size = size/o.cur_scale;
+			var rect_size = o.cur_scale;
+			for (var x = 0; x < cur_size; x++) {
+				for (var y = 0; y < cur_size; y++) {
+					if (o.plane === "gb") {
+						r = o.cur_rgb[0];
+						g = o.cur_rgb_vertex[1] + x;
+						b = o.cur_rgb_vertex[2] + y;
+					} else if (o.plane === "rb") {
+						r = o.cur_rgb_vertex[0] + x;
+						g = o.cur_rgb[1];
+						b = o.cur_rgb_vertex[2] + y;
+					} else if (o.plane === "rg") {
+						r = o.cur_rgb_vertex[0] + x;
+						g = o.cur_rgb_vertex[1] + y;
+						b = o.cur_rgb[2];
+					}
+					$palette.fillStyle = style_str([r, g, b]);
+					$palette.fillRect(x*o.cur_scale, y*o.cur_scale, rect_size, rect_size);
+				}
+			}
+			o.saved_palette = $palette.getImageData(0, 0, size, size);
+			draw_palette_rect(o);
+		}
+		
+		function draw_color_gradient_rect(o) {
+			if (!o.color_gradient_selected || cb_hide_sel_rect.checked)
+				return;
+			$color_gradient.beginPath();
+			var y = (o.color_gradient_abs_sel_pos - o.color_gradient_start) * o.cur_scale;
+			$color_gradient.rect(0.5, y-sel_radius+0.5, gradient_width, 2*sel_radius+1);
+			$color_gradient.strokeStyle = 'rgba(255, 255, 255, 1)';
+			//style_str(sel_rect_rgb);
+			$color_gradient.stroke();
+			$color_gradient.closePath();
+		}
+		
+		function interpolated_rgb(rgb0, rgb1, fraction) {
+			res = [-1, -1, -1];
+			for (var i = 0; i < 3; i++) {
+				res[i] = round(rgb0[i] + (rgb1[i] - rgb0[i]) * fraction);
+			}
+			return res;
+		}
+		
+		function extrapolate_gradient_rgbs(o) {
+			colors_and_gradient_input_nums_ = colors_and_gradient_input_nums();
+			if (colors_and_gradient_input_nums_ === null)
+				return;
+			colors = colors_and_gradient_input_nums_[0];
+			nums = colors_and_gradient_input_nums_[1];
+			var r, g, b;
+			var rgbs = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1], [-1, -1, -1]];
+			for (var i = 0; i < 2; i++) {
+				rgbs[nums[i]] = hex_to_rgb(colors[i]);
+			}
+			if (nums[0] !== 0) {
+				coeff = (0 - nums[0])/(nums[1] - nums[0]);
+				for (var i = 0; i < 3; i++) {
+					rgbs[0][i] = extrapolated_component(rgbs, nums, 0, i);
+				}
+			}
+			if (nums[1] !== 3) {
+				coeff = (3 - nums[1])/(nums[1] - nums[0]);
+				for (var i = 0; i < 3; i++) {
+					rgbs[3][i] = extrapolated_component(rgbs, nums, 1, i);
+				}
+			}
+			o.color_gradient_abs_rgb0 = rgbs[0];
+			o.color_gradient_abs_rgb3 = rgbs[3];
+		}
+		
+		function _draw_gradient(o, gradient_obj, abs_rgb0, abs_rgb1, gradient_start) {
+			rgb0 = interpolated_rgb(abs_rgb0, abs_rgb1, gradient_start/size);
+			rgb1 = interpolated_rgb(abs_rgb0, abs_rgb1, (gradient_start + 2*o.scale_rect_radius) / size);
+			for (var y = 0; y < size; y++) {
+				r = Math.round(rgb0[0] + (rgb1[0] - rgb0[0]) * y/(size-1));
+				g = Math.round(rgb0[1] + (rgb1[1] - rgb0[1]) * y/(size-1));
+				b = Math.round(rgb0[2] + (rgb1[2] - rgb0[2]) * y/(size-1));
+				gradient_obj.fillStyle = style_str([r, g, b]);
+				gradient_obj.fillRect(0, y, gradient_width, 1);
+			}
+			gradient_data = gradient_obj.getImageData(0, 0, gradient_width, size);
+			return gradient_data;
+		}
+		
+		function draw_color_gradient(o) {
+			o.saved_color_gradient = _draw_gradient(o, $color_gradient, o.color_gradient_abs_rgb0, o.color_gradient_abs_rgb3, o.color_gradient_start);
+			draw_color_gradient_rect(o);
+		}
+		
+		function draw_black_gradient(o) {
+			_draw_gradient(o, $black_gradient, o.cur_rgb, black_gradient_abs_rgb1, o.black_gradient_start);
+		}
+		
+		function draw_white_gradient(o) {
+			_draw_gradient(o, $white_gradient, o.cur_rgb, white_gradient_abs_rgb1, o.black_gradient_start);
+		}
+		
+		function change_plane(o, name) {
+			o.plane = name;
+			calc_cur_coord_nums(o);
+			doc_elt("gb").style.border = "";
+			doc_elt("rb").style.border = "";
+			doc_elt("rg").style.border = "";
+			doc_elt(o.plane).style.border = "inset";
+			draw_palette(o);
+		}
+		
+		function change_obj(o) {
+			set_cur_rgb(o, o.cur_rgb);
+			//set_cur_rgb(font, font.cur_rgb);
+			change_plane(o, o.plane);
+			extrapolate_gradient_rgbs(o);
+			draw_white_gradient(o);
+			draw_black_gradient(o);
+			draw_color_gradient(o);
+			adjust_zoom_buttons(o.scale_level);
+		}
+		
+		function adjust_zoom_buttons(scale_level) {
+			if (scale_level == max_scale_level) {
+				doc_elt("zoom_in").disabled = true;
+				doc_elt("zoom_out").disabled = false;
+			} else if (scale_level == 0) {
+				doc_elt("zoom_in").disabled = false;
+				doc_elt("zoom_out").disabled = true;
+			} else {
+				doc_elt("zoom_in").disabled = false;
+				doc_elt("zoom_out").disabled = false;
+			}
+		}
+		
+		function zoom(o, scale_level) {
+			adjust_zoom_buttons(scale_level);
+			o.cur_scale = 1;
+			for (var i = 0; i < scale_level; i++) {
+				o.cur_scale *= scale_factor;
+			}
+			o.scale_rect_radius = size / (2*o.cur_scale);
+			calc_cur_rgb_vertex(o);
+			draw_palette(o);
+			// color gradient zoom
+			color_gradient_start = limit(round(o.color_gradient_abs_sel_pos/o.scale_rect_radius) - 1, 0, 2*o.cur_scale-2) * o.scale_rect_radius;
+			draw_color_gradient(o);
+			if (o.cur_image === "color_gradient") {
+				draw_color_gradient_rect(o);
+			}
+			// black and white gradient zoom
+			o.black_gradient_start = limit(round(o.black_gradient_start/o.scale_rect_radius) - 1, 0, 2*o.cur_scale-2) * o.scale_rect_radius;
+			draw_black_gradient(o);
+			draw_white_gradient(o);
+			log(o.name + o.cur_rgb);
+		}
+		
+		/////////////////////////////////////////////
+		
+		jQuery(document).ready(function() {
+			
+			$('#palette').click(function(e) {
+				$palette.putImageData(o.saved_palette, 0, 0, size, size);
+				var x = e.pageX - $(this).position().left;
+				var y = e.pageY - $(this).position().top;
+				set_cur_rgb_from_x_y(o, x, y);
+				remove_color_gradient_rect(o);
+				draw_palette_rect(o, x, y);
+				o.cur_image = "palette";
+				log(o.name + o.cur_rgb);
+			});
+			
+			$('#gb').click(function() {
+				change_plane(o, "gb");
+			});
+			
+			$('#rb').click(function() {
+				change_plane(o, "rb");
+			});
+			
+			$('#rg').click(function() {
+				change_plane(o, "rg");
+			});
+			
+			$('#choose').click(function() {
+				s = $('#color_val').val();
+				if (is_hex_color(s)) {
+					set_cur_rgb(o, hex_to_rgb(s));
+					remove_color_gradient_rect(o);
+					draw_palette(o);
+				}
+			});
+			
+			$('#hide_sel_rect').click(function() {
+				if (this.checked) {
+					$palette.putImageData(o.saved_palette, 0, 0, size, size);
+					$color_gradient.putImageData(o.saved_color_gradient, 0, 0, gradient_width, size);
+				} else {
+					draw_palette_rect(o);
+					draw_color_gradient_rect(o);
+				}
+			});
+			
+			function gradient_click(o, e, sender, abs_rgb0, abs_rgb1, gradient_start) {
+				var y = e.pageY - $(e.target).position().top;
+				sel_pos = floor(y/o.cur_scale) + gradient_start;
+				if (sender === '#color_gradient') {
+					$color_gradient.putImageData(o.saved_color_gradient, 0, 0, gradient_width, size);
+					o.color_gradient_abs_sel_pos = sel_pos;
+					o.color_gradient_selected = 1;
+					draw_color_gradient_rect(o);
+					o.cur_image = "color_gradient";
+				} else {
+					o.cur_image = "";
+				}
+				var rgb = interpolated_rgb(abs_rgb0, abs_rgb1, sel_pos/size);
+				set_cur_rgb(o, rgb);
+				change_plane(o, o.plane);
+			}
+			
+			$('#color_gradient').click(function(e) {
+				gradient_click(o, e, '#color_gradient', o.color_gradient_abs_rgb0, o.color_gradient_abs_rgb3, o.color_gradient_start);
+			});
+			
+			$('#black_gradient').click(function(e) {
+				gradient_click(o, e, '#black_gradient', o.cur_rgb, black_gradient_abs_rgb1, o.black_gradient_start);
+			});
+			
+			$('#white_gradient').click(function(e) {
+				gradient_click(o, e, '#white_gradient', o.cur_rgb, white_gradient_abs_rgb1, o.black_gradient_start);
+			});
+			
+			$('.gradient_input').each(function() {
+				$(this).attr('old_val', $(this).val());
+			});
+			
+			$('.gradient_input').on('change keypress paste focus textInput input',
+					function(e) {
+				var val = $(this).val();
+				if (val != $(this).attr('old_val')) {
+					$(this).attr('old_val', val); 
+					clear_gradient_input(o, e);
+				}
+			});
+			
+			$('#fill_color_gradient').click(function() {
+				extrapolate_gradient_rgbs(o);
+				draw_color_gradient(o);
+			});
+			
+			$('#zoom_in').click(function() {
+				o.scale_level++;
+				zoom(o, o.scale_level);
+			});
+			
+			$('#zoom_out').click(function() {
+				o.scale_level--;
+				zoom(o, o.scale_level);
+			});
+			
+			function palette_or_gradient_keydown(o, e) {
+				if ([37, 38, 39, 40, 109, 189, 107, 187].indexOf(e.which) >= 0) {
+					var last_start = size - 2*o.scale_rect_radius;
+					if ([38, 40].indexOf(e.which) >= 0) { // up, down
+						if (e.which == 38) // up
+							delta = -o.scale_rect_radius;
+						else
+							delta = o.scale_rect_radius;
+						o.color_gradient_start = limit(o.color_gradient_start + delta, 0, last_start);
+						o.black_gradient_start = limit(o.black_gradient_start + delta, 0, last_start);
+					}
+					if ([107, 187, 109, 189].indexOf(e.which) >= 0) { // plus, minus //
+						var rgb_delta = [0, 0, 0];
+						o.cur_image = "palette";
+						delta = pow(scale_factor, max_scale_level) / o.cur_scale;
+						if ([107, 187].indexOf(e.which) >= 0) // plus
+							rgb_delta[o.third_coord_num] = delta;
+						else // minus
+							rgb_delta[o.third_coord_num] = -delta;
+						change_cur_rgb(o, rgb_delta);
+					} else {
+						if ([37, 39].indexOf(e.which) >= 0) { // left, right
+							coord_num = o.cur_coord_nums[0];
+						} else if ([38, 40].indexOf(e.which) >= 0) { // up, down
+							coord_num = o.cur_coord_nums[1];
+						}
+						if ([37, 38].indexOf(e.which) >= 0) { // left, up
+							o.cur_rgb_vertex[coord_num] -= o.scale_rect_radius;
+							if (o.cur_rgb_vertex[coord_num] < 0)
+								o.cur_rgb_vertex[coord_num] = 0;
+						} else if ([39, 40].indexOf(e.which) >= 0) { // right, down
+							o.cur_rgb_vertex[coord_num] += o.scale_rect_radius;
+							if (o.cur_rgb_vertex[coord_num] > last_start)
+								o.cur_rgb_vertex[coord_num] = last_start;
+						}
+						draw_color_gradient(o);
+						draw_black_gradient(o);
+						draw_white_gradient(o);
+					}
+					draw_palette(o);
+					return false;
+				}
+			}
+			
+			$(document).keydown(function(e) {
+				if ( (e.target.tagName.toLowerCase() === 'input') && $(e.target).attr("type") !== 'button' )
+					return true;
+				return palette_or_gradient_keydown(o, e);
+			});
+			
+			$('input[name="bf_radio"]').click(function() {
+				if ($(this).val() === "background")
+					o = background;
+				else
+					o = font;
+				change_obj(o);
+			});
+			
+			$('#background').attr('checked', true);
+			cb_hide_sel_rect = doc_elt('hide_sel_rect');
+			$("#color_tables").load("color_tables.html");
+			$palette = doc_elt('palette').getContext('2d');
+			$color_gradient = doc_elt('color_gradient').getContext('2d');
+			$black_gradient = doc_elt('black_gradient').getContext('2d');
+			$white_gradient = doc_elt('white_gradient').getContext('2d');
+			change_obj(o);
+		});
+		
+	</script>
+</head>
+<body>
+	<div id="wrapper">
+		<div class="center_col">
+			<div>
+				<canvas class="canvas" id="palette" width="256" height="256" tabindex='1'></canvas>
+				<span style="float: left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+				<canvas class="canvas" id="white_gradient" width="48" height="256" tabindex='1'></canvas>
+				<span style="float: left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+				<canvas class="canvas" id="black_gradient" width="48" height="256" tabindex='1'></canvas>
+				<span style="float: left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+				<canvas class="canvas" id="color_gradient" width="48" height="256" tabindex='1'></canvas>
+			</div>
+			<div id="gradient_inputs">
+				<input class="gradient_input" id="gradient_input0" value="#FF7F00">
+				<input class="gradient_input" id="gradient_input1">
+				<input type="button" id="fill_color_gradient" value="Fill gradient">
+				<input class="gradient_input" id="gradient_input2" value="#7FAF7F">
+				<input class="gradient_input" id="gradient_input3">
+			</div>
+			<input type="radio" name="bf_radio" id="background" value="background" checked> Background <br>
+			<input type="radio" name="bf_radio" id="font" value="font"> Font
+			<div style="clear: both"></div>
+			<br>
+			<input type="button" id="gb" value="Green Blue">
+			<input type="button" id="rb" value="Red Blue">
+			<input type="button" id="rg" value="Red Green">
+			&nbsp;&nbsp;&nbsp;
+			<input type="button" id="zoom_in" value="Zoom in">
+			<input type="button" id="zoom_out" value="Zoom out" disabled>
+			<br>
+			<br>
+			Color:&nbsp;<input id="color_val">&nbsp;<input type="button" id="choose" value="Choose">&nbsp;&nbsp;&nbsp;
+			<input type="checkbox" id="hide_sel_rect" value=""> Hide selection rectangle
+		</div>
+		<br>
+		<div id="example" style="background-color: #FFFF00; height: 256px; width: 640px;">
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc a sodales nisi, quis suscipit diam. Mauris euismod bibendum gravida. Maecenas ligula leo, scelerisque sed pretium in, ullamcorper in massa. Fusce sodales dignissim tortor tempor commodo. Sed a scelerisque enim. Integer lacinia a ipsum mattis feugiat. Pellentesque vitae facilisis tellus, id viverra dui.</p>
+<p>Donec et aliquet nulla. Maecenas ultrices laoreet pharetra. Proin molestie imperdiet urna, in aliquet ligula suscipit vitae. Suspendisse eget mattis ligula. Praesent et nibh id est imperdiet mollis ac eget mauris. Donec tincidunt ullamcorper lacinia. Vestibulum accumsan vestibulum massa, sed commodo risus iaculis nec. Vestibulum eu mi mi. Suspendisse libero lectus, euismod sed enim at, venenatis sodales dolor. Mauris sollicitudin et sem vitae ultrices. Nullam ligula dolor, laoreet et dolor sit amet, consectetur egestas odio. Nullam laoreet nibh sed velit tempor, eu consectetur purus eleifend.</p>
+		</div>
+
+		<div id="color_tables"></div>
+	</div>
+</body>
+</html>
