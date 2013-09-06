@@ -1,5 +1,4 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<!-- line 60 -->
 
 
 <html xml:lang="ru" xmlns="http://www.w3.org/1999/xhtml">
@@ -56,14 +55,9 @@
 		}
 		
 		function calc_cur_rgb_vertex(o) {
-			log("_");
-			log(o.cur_rgb);
-			log(o.scale_rect_radius);
-			log(o.cur_scale);
 			for (var i = 0; i < 3; i++) {
 				o.cur_rgb_vertex[i] = limit(round(o.cur_rgb[i]/o.scale_rect_radius) - 1, 0, 2*o.cur_scale-2) * o.scale_rect_radius;
 			}
-			log(o.cur_rgb_vertex);
 		}
 		
 		function calc_cur_coord_nums(o) {
@@ -361,7 +355,6 @@
 			o.black_gradient_start = limit(round(o.black_gradient_start/o.scale_rect_radius) - 1, 0, 2*o.cur_scale-2) * o.scale_rect_radius;
 			draw_black_gradient(o);
 			draw_white_gradient(o);
-			log(o.name + o.cur_rgb);
 		}
 		
 		/////////////////////////////////////////////
@@ -376,7 +369,6 @@
 				remove_color_gradient_rect(o);
 				draw_palette_rect(o, x, y);
 				o.cur_image = "palette";
-				log(o.name + o.cur_rgb);
 			});
 			
 			$('#gb').click(function() {
